@@ -1,6 +1,8 @@
 import { useState } from "react";
 
 const SUPPORTED_LANGUAGES = [
+  "Afrikaans",
+  "Albanian",
   "Arabic",
   "Bengali",
   "Bulgarian",
@@ -36,6 +38,7 @@ const SUPPORTED_LANGUAGES = [
   "Slovenian",
   "Spanish",
   "Swedish",
+  "Tagalog",
   "Thai",
   "Turkish",
   "Ukrainian",
