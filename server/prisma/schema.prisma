@@ -393,3 +393,20 @@ model workspace_parsed_files {
   @@index([workspaceId])
   @@index([userId])
 }
+
+model study_sessions {
+  id               Int      @id @default(autoincrement())
+  session_id       String   @unique
+  workspace_id     Int
+  student_id       Int?
+  current_concept  String?
+  current_state    String   @default("concept_introduction")
+  concept_progress String?  @default("[]")
+  student_answers  String?  @default("[]")
+  difficulty_level Int      @default(1)
+  createdAt        DateTime @default(now())
+  lastUpdatedAt    DateTime @default(now())
+
+  @@index([workspace_id])
+  @@index([student_id])
+}

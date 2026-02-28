@@ -29,8 +29,26 @@ import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import StudySessionContainer from "@/components/StudyMode/StudySessionContainer";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
+  // If workspace is in study mode, render the StudySessionContainer instead
+  if (workspace?.chatMode === "study") {
+    return (
+      <div
+        style={{ height: isMobile ? "100%" : "calc(100% - 32px)" }}
+        className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-hidden"
+      >
+        {isMobile && <SidebarMobileHeader />}
+        <StudySessionContainer workspace={workspace} />
+      </div>
+    );
+  }
+
+  return <ChatContainerDefault workspace={workspace} knownHistory={knownHistory} />;
+}
+
+function ChatContainerDefault({ workspace, knownHistory = [] }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { threadSlug = null } = useParams();
