@@ -4,6 +4,9 @@ const { resetMemory } = require("./commands/reset");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
 const { SystemPromptVariables } = require("../../models/systemPromptVariables");
+const {
+  buildTranslationInstruction,
+} = require("../languageDetection");
 
 const VALID_COMMANDS = {
   "/reset": resetMemory,
@@ -84,19 +87,31 @@ async function recentChatHistory({
 /**
  * Returns the base prompt for the chat. This method will also do variable
  * substitution on the prompt if there are any defined variables in the prompt.
+ * When auto-translate is enabled for the workspace, appends a translation instruction.
  * @param {Object|null} workspace - the workspace object
  * @param {Object|null} user - the user object
+ * @param {string|null} userMessage - the user's message (used for language detection)
  * @returns {Promise<string>} - the base prompt
  */
-async function chatPrompt(workspace, user = null) {
+async function chatPrompt(workspace, user = null, userMessage = null) {
   const { SystemSettings } = require("../../models/systemSettings");
-  const basePrompt =
+  let basePrompt =
     workspace?.openAiPrompt ?? SystemSettings.saneDefaultSystemPrompt;
-  return await SystemPromptVariables.expandSystemPromptVariables(
+  basePrompt = await SystemPromptVariables.expandSystemPromptVariables(
     basePrompt,
     user?.id,
     workspace?.id
   );
+
+  const translationInstruction = buildTranslationInstruction(
+    workspace,
+    userMessage
+  );
+  if (translationInstruction) {
+    basePrompt = `${basePrompt}\n\n${translationInstruction}`;
+  }
+
+  return basePrompt;
 }
 
 // We use this util function to deduplicate sources from similarity searching

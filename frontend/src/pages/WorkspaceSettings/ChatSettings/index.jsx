@@ -9,6 +9,7 @@ import ChatTemperatureSettings from "./ChatTemperatureSettings";
 import ChatModeSelection from "./ChatModeSelection";
 import WorkspaceLLMSelection from "./WorkspaceLLMSelection";
 import ChatQueryRefusalResponse from "./ChatQueryRefusalResponse";
+import ChatAutoTranslateSettings from "./ChatAutoTranslateSettings";
 import CTAButton from "@/components/lib/CTAButton";
 
 export default function ChatSettings({ workspace }) {
@@ -86,6 +87,10 @@ export default function ChatSettings({ workspace }) {
         />
         <ChatTemperatureSettings
           settings={settings}
+          workspace={workspace}
+          setHasChanges={setHasChanges}
+        />
+        <ChatAutoTranslateSettings
           workspace={workspace}
           setHasChanges={setHasChanges}
         />

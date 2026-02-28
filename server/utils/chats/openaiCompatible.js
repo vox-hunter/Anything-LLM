@@ -153,7 +153,9 @@ async function chatSync({
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
+    systemPrompt:
+      systemPrompt ??
+      (await chatPrompt(workspace, null, String(prompt))),
     userPrompt: String(prompt),
     contextTexts,
     chatHistory: history,
@@ -387,7 +389,9 @@ async function streamChat({
   // Compress & Assemble message to ensure prompt passes token limit with room for response
   // and build system messages based on inputs and history.
   const messages = await LLMConnector.compressMessages({
-    systemPrompt: systemPrompt ?? (await chatPrompt(workspace)),
+    systemPrompt:
+      systemPrompt ??
+      (await chatPrompt(workspace, null, String(prompt))),
     userPrompt: String(prompt),
     contextTexts,
     chatHistory: history,
