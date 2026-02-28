@@ -1,5 +1,8 @@
 import { useState } from "react";
 
+const MIN_INPUT_WIDTH = 80;
+const CHAR_WIDTH_ESTIMATE = 12;
+
 export default function FillInBlank({ content = {}, onSubmit, componentId }) {
   const { sentence, blank_answer } = content;
   const [answer, setAnswer] = useState("");
@@ -40,7 +43,7 @@ export default function FillInBlank({ content = {}, onSubmit, componentId }) {
                 : "border-red-500 text-red-400"
               : "border-white/20 text-white focus:border-blue-500"
           }`}
-          style={{ width: `${Math.max(80, (blank_answer || "").length * 12)}px` }}
+          style={{ width: `${Math.max(MIN_INPUT_WIDTH, (blank_answer || "").length * CHAR_WIDTH_ESTIMATE)}px` }}
         />
         {parts[1] || ""}
       </div>
