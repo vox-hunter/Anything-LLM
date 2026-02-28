@@ -22,6 +22,7 @@ import SpeechRecognition, {
 } from "react-speech-recognition";
 import { ChatTooltips } from "./ChatTooltips";
 import { MetricsProvider } from "./ChatHistory/HistoricalMessage/Actions/RenderMetrics";
+import ChatExportButton from "./ChatExportButton";
 import useChatContainerQuickScroll from "@/hooks/useChatContainerQuickScroll";
 import { PENDING_HOME_MESSAGE } from "@/utils/constants";
 import { safeJsonParse } from "@/utils/request";
@@ -374,6 +375,9 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
       className="transition-all duration-500 relative md:ml-[2px] md:mr-[16px] md:my-[16px] md:rounded-[16px] bg-theme-bg-secondary w-full h-full overflow-y-scroll no-scroll z-[2]"
     >
       {isMobile && <SidebarMobileHeader />}
+      <div className="absolute top-2 right-2 z-10">
+        <ChatExportButton history={chatHistory} workspace={workspace} />
+      </div>
       <DnDFileUploaderWrapper>
         <div className="flex flex-col h-full w-full">
           <div className="contents">
