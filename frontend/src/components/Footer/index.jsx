@@ -16,6 +16,7 @@ import SettingsButton from "../SettingsButton";
 import { isMobile } from "react-device-detect";
 import { Tooltip } from "react-tooltip";
 import { Link } from "react-router-dom";
+import NotificationBell from "../NotificationBell";
 
 export const MAX_ICONS = 3;
 export const ICON_COMPONENTS = {
@@ -97,6 +98,7 @@ export default function Footer() {
               />
             </Link>
           </div>
+          {!isMobile && <NotificationBell />}
           {!isMobile && <SettingsButton />}
         </div>
         <Tooltip
@@ -130,6 +132,7 @@ export default function Footer() {
             )}
           </a>
         ))}
+        {!isMobile && <NotificationBell />}
         {!isMobile && <SettingsButton />}
       </div>
       <Tooltip
