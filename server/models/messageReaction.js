@@ -70,7 +70,7 @@ const MessageReaction = {
         FROM message_reactions mr
         JOIN workspace_chats wc ON mr."chatId" = wc."id"
         GROUP BY wc."workspaceId", mr."reaction"
-        ORDER BY wc."workspaceId", count DESC
+        ORDER BY wc."workspaceId", COUNT(mr."id") DESC
       `;
 
       const grouped = {};

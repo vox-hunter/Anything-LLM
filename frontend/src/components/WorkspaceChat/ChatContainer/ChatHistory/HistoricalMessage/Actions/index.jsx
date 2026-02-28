@@ -173,11 +173,15 @@ function ReactionPicker({ chatId, slug }) {
 
   const toggleReaction = async (reactionKey) => {
     if (selected.includes(reactionKey)) {
-      await Workspace.removeChatReaction(chatId, slug, reactionKey);
-      setSelected((prev) => prev.filter((r) => r !== reactionKey));
+      const result = await Workspace.removeChatReaction(chatId, slug, reactionKey);
+      if (result?.success) {
+        setSelected((prev) => prev.filter((r) => r !== reactionKey));
+      }
     } else {
-      await Workspace.addChatReaction(chatId, slug, reactionKey);
-      setSelected((prev) => [...prev, reactionKey]);
+      const result = await Workspace.addChatReaction(chatId, slug, reactionKey);
+      if (result?.reaction) {
+        setSelected((prev) => [...prev, reactionKey]);
+      }
     }
   };
 
@@ -189,6 +193,8 @@ function ReactionPicker({ chatId, slug }) {
         data-tooltip-content={t("chat_window.reactions")}
         className="text-zinc-300"
         aria-label={t("chat_window.reactions")}
+        aria-expanded={open}
+        aria-haspopup="true"
       >
         <Smiley
           color="var(--theme-sidebar-footer-icon-fill)"
@@ -198,10 +204,14 @@ function ReactionPicker({ chatId, slug }) {
         />
       </button>
       {open && (
-        <div className="absolute bottom-full left-0 mb-1 flex gap-x-1 bg-theme-bg-secondary border border-white/10 rounded-lg p-1 z-10 shadow-lg">
+        <div
+          role="menu"
+          className="absolute bottom-full left-0 mb-1 flex gap-x-1 bg-theme-bg-secondary border border-white/10 rounded-lg p-1 z-10 shadow-lg"
+        >
           {REACTION_OPTIONS.map((opt) => (
             <button
               key={opt.key}
+              role="menuitem"
               onClick={() => toggleReaction(opt.key)}
               className={`px-2 py-1 rounded text-xs whitespace-nowrap transition-colors ${
                 selected.includes(opt.key)
