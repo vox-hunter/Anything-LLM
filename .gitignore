@@ -12,3 +12,4 @@ yarn.lock
 .idea
 server/storage/anythingllm.db
 server/storage/anythingllm.db-journal
+package-lock.json
