@@ -393,3 +393,13 @@ model workspace_parsed_files {
   @@index([workspaceId])
   @@index([userId])
 }
+
+model bookmarks {
+  id          Int      @id @default(autoincrement())
+  chat_id     Int
+  user_id     Int?
+  createdAt   DateTime @default(now())
+
+  @@index([user_id])
+  @@index([chat_id])
+}
