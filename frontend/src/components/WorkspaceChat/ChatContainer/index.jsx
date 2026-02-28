@@ -29,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import paths from "@/utils/paths";
 import QuickActions from "@/components/lib/QuickActions";
 import SuggestedMessages from "@/components/lib/SuggestedMessages";
+import WorkspaceOnboardingChecklist from "@/components/WorkspaceOnboarding";
 
 export default function ChatContainer({ workspace, knownHistory = [] }) {
   const navigate = useNavigate();
@@ -361,6 +362,7 @@ export default function ChatContainer({ workspace, knownHistory = [] }) {
               suggestedMessages={workspace?.suggestedMessages}
               sendCommand={sendCommand}
             />
+            <WorkspaceOnboardingChecklist workspace={workspace} />
           </div>
         </DnDFileUploaderWrapper>
         <ChatTooltips />

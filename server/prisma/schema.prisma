@@ -153,6 +153,7 @@ model workspaces {
   workspace_agent_invocations  workspace_agent_invocations[]
   prompt_history               prompt_history[]
   workspace_parsed_files       workspace_parsed_files[]
+  workspace_onboarding         workspace_onboarding?
 }
 
 model workspace_threads {
@@ -392,4 +393,21 @@ model workspace_parsed_files {
 
   @@index([workspaceId])
   @@index([userId])
+}
+
+model workspace_onboarding {
+  id                   Int        @id @default(autoincrement())
+  workspaceId          Int        @unique
+  uploadedDoc          Boolean    @default(false)
+  embeddedDoc          Boolean    @default(false)
+  sentFirstMessage     Boolean    @default(false)
+  configuredPrompt     Boolean    @default(false)
+  enabledAgentSkill    Boolean    @default(false)
+  skipped              Boolean    @default(false)
+  completed            Boolean    @default(false)
+  createdAt            DateTime   @default(now())
+  lastUpdatedAt        DateTime   @default(now())
+  workspace            workspaces @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+
+  @@index([workspaceId])
 }
