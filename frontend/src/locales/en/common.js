@@ -955,6 +955,7 @@ const TRANSLATIONS = {
     show_citations: "Show citations",
     pause_tts_speech_message: "Pause TTS speech of message",
     fork: "Fork",
+    branch_from_here: "Branch from here",
     delete: "Delete",
     save_submit: "Save & Submit",
     cancel: "Cancel",

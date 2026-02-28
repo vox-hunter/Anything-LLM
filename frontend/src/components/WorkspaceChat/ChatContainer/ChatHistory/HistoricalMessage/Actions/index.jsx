@@ -1,6 +1,12 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
+import {
+  Check,
+  ThumbsUp,
+  ArrowsClockwise,
+  Copy,
+  GitBranch,
+} from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
 import RenderMetrics from "./RenderMetrics";
@@ -54,6 +60,9 @@ const Actions = ({
               tooltipContent={t("chat_window.good_response")}
               IconComponent={ThumbsUp}
             />
+          )}
+          {chatId && role === "assistant" && !isEditing && (
+            <BranchFromHere forkThread={forkThread} chatId={chatId} />
           )}
           <ActionMenu
             chatId={chatId}
@@ -144,6 +153,28 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
           size={20}
           className="mb-1"
           weight="fill"
+        />
+      </button>
+    </div>
+  );
+}
+
+function BranchFromHere({ forkThread, chatId }) {
+  const { t } = useTranslation();
+  if (!chatId) return null;
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => forkThread(chatId)}
+        data-tooltip-id="branch-from-here"
+        data-tooltip-content={t("chat_window.branch_from_here")}
+        className="border-none text-zinc-300"
+        aria-label={t("chat_window.branch_from_here")}
+      >
+        <GitBranch
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={20}
+          className="mb-1"
         />
       </button>
     </div>

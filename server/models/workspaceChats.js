@@ -315,6 +315,40 @@ const WorkspaceChats = {
       return { chats: null, message: error.message };
     }
   },
+
+  /**
+   * Get all visible chats up to and including a specific chat ID for branching.
+   * @param {Object} params
+   * @param {number} params.workspaceId - The workspace ID.
+   * @param {number|null} params.userId - The user ID (null for single-user mode).
+   * @param {number|null} params.threadId - The thread ID (null for default workspace thread).
+   * @param {number} params.chatId - The chat ID to branch from (inclusive).
+   * @returns {Promise<Array>} The chats up to and including the specified chat ID.
+   */
+  getChatsUpToId: async function ({
+    workspaceId,
+    userId = null,
+    threadId = null,
+    chatId,
+  }) {
+    try {
+      const chats = await prisma.workspace_chats.findMany({
+        where: {
+          workspaceId,
+          user_id: userId,
+          include: true,
+          thread_id: threadId,
+          api_session_id: null,
+          id: { lte: Number(chatId) },
+        },
+        orderBy: { id: "asc" },
+      });
+      return chats;
+    } catch (error) {
+      console.error(error.message);
+      return [];
+    }
+  },
 };
 
 module.exports = { WorkspaceChats };

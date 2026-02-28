@@ -789,18 +789,12 @@ function workspaceEndpoints(app) {
               })
             )?.id ?? null
           : null;
-        const chatsToFork = await WorkspaceChats.where(
-          {
-            workspaceId: workspace.id,
-            user_id: user?.id,
-            include: true, // only duplicate visible chats
-            thread_id: threadId,
-            api_session_id: null, // Do not include API session chats.
-            id: { lte: Number(chatId) },
-          },
-          null,
-          { id: "asc" }
-        );
+        const chatsToFork = await WorkspaceChats.getChatsUpToId({
+          workspaceId: workspace.id,
+          userId: user?.id,
+          threadId,
+          chatId,
+        });
 
         const { thread: newThread, message: threadError } =
           await WorkspaceThread.new(workspace, user?.id);
