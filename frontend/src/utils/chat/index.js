@@ -163,6 +163,39 @@ export default function handleChat(
     setChatHistory([_chatHistory.pop()]);
   }
 
+  if (action === "clear_chat") {
+    // Clear visible chat, keeping only the clear confirmation message.
+    setChatHistory([_chatHistory.pop()]);
+  }
+
+  if (action === "export_chat") {
+    // Trigger a file download of the exported chat content.
+    const exportContent = chatResult.exportContent || "";
+    if (exportContent) {
+      const blob = new Blob([exportContent], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `chat-export-${new Date().toISOString().slice(0, 10)}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  if (action === "apply_template") {
+    // Insert template content into the prompt input.
+    const templateContent = chatResult.templateContent || "";
+    if (templateContent) {
+      window.dispatchEvent(
+        new CustomEvent("set_prompt_input", {
+          detail: { messageContent: templateContent, writeMode: "replace" },
+        })
+      );
+    }
+  }
+
   // If thread was updated automatically based on chat prompt
   // then we can handle the updating of the thread here.
   if (action === "rename_thread") {

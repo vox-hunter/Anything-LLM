@@ -965,6 +965,16 @@ const TRANSLATIONS = {
     custom_agents_coming_soon: "custom agents are coming soon!",
     slash_reset: "/reset",
     preset_reset_description: "Clear your chat history and begin a new chat",
+    slash_clear: "/clear",
+    preset_clear_description:
+      "Clear the current chat view without resetting memory",
+    slash_export: "/export",
+    preset_export_description: "Export your current chat history as a text file",
+    slash_template: "/template",
+    preset_template_description:
+      "Insert a reusable prompt template into the chat input",
+    slash_help: "/help",
+    preset_help_description: "Show all available slash commands",
     add_new_preset: " Add New Preset",
     command: "Command",
     your_command: "your-command",
