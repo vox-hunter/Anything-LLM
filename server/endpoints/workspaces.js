@@ -38,6 +38,9 @@ const { purgeDocument } = require("../utils/files/purgeDocument");
 const { getModelTag } = require("./utils");
 const { searchWorkspaceAndThreads } = require("../utils/helpers/search");
 const { workspaceParsedFilesEndpoints } = require("./workspacesParsedFiles");
+const {
+  WorkspaceOnboarding,
+} = require("../models/workspaceOnboarding");
 
 function workspaceEndpoints(app) {
   if (!app) return;
@@ -1054,6 +1057,67 @@ function workspaceEndpoints(app) {
         response.status(200).json(searchResults);
       } catch (error) {
         console.error("Error searching for workspaces:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  // Workspace onboarding endpoints
+  app.get(
+    "/workspace/:slug/onboarding",
+    [validatedRequest, validWorkspaceSlug],
+    async (_request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const onboarding = await WorkspaceOnboarding.getForWorkspace(
+          workspace.id
+        );
+        response.status(200).json({ onboarding });
+      } catch (error) {
+        console.error("Error getting workspace onboarding:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/onboarding/complete-step",
+    [validatedRequest, validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const { step } = reqBody(request);
+        if (!step) {
+          response.status(400).json({ error: "Step is required." });
+          return;
+        }
+
+        const onboarding = await WorkspaceOnboarding.completeStep(
+          workspace.id,
+          step
+        );
+        if (!onboarding) {
+          response.status(400).json({ error: "Invalid step." });
+          return;
+        }
+        response.status(200).json({ onboarding });
+      } catch (error) {
+        console.error("Error completing onboarding step:", error);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/onboarding/skip",
+    [validatedRequest, validWorkspaceSlug],
+    async (_request, response) => {
+      try {
+        const workspace = response.locals.workspace;
+        const onboarding = await WorkspaceOnboarding.skip(workspace.id);
+        response.status(200).json({ onboarding });
+      } catch (error) {
+        console.error("Error skipping workspace onboarding:", error);
         response.sendStatus(500).end();
       }
     }
