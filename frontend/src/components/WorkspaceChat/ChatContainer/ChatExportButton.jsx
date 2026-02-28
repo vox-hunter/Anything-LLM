@@ -18,6 +18,13 @@ export default function ChatExportButton({ history, workspace }) {
   const menuRef = useRef(null);
   const buttonRef = useRef(null);
 
+  const hasExportableMessages = history?.some(
+    (msg) =>
+      msg.content &&
+      (msg.role === "user" || msg.role === "assistant") &&
+      msg.type !== "statusResponse"
+  );
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -49,6 +56,8 @@ export default function ChatExportButton({ history, workspace }) {
       showToast("Failed to export chat.", "error");
     }
   };
+
+  if (!hasExportableMessages) return null;
 
   return (
     <div className="relative">

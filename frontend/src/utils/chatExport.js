@@ -26,13 +26,21 @@ function displayName(role, workspace) {
 }
 
 /**
+ * Returns unique citation titles from sources.
+ * @param {Array} sources
+ * @returns {string[]}
+ */
+function uniqueCitationTitles(sources = []) {
+  return [...new Set(sources.map((s) => s.title).filter(Boolean))];
+}
+
+/**
  * Formats citation sources into a readable string.
  * @param {Array} sources
  * @returns {string}
  */
 function formatCitations(sources = []) {
-  if (!sources.length) return "";
-  const titles = [...new Set(sources.map((s) => s.title).filter(Boolean))];
+  const titles = uniqueCitationTitles(sources);
   if (!titles.length) return "";
   return titles.map((t) => `- ${t}`).join("\n");
 }
@@ -170,9 +178,7 @@ export async function exportAsPDF(history, workspace) {
 
     // Citations
     if (msg.role === "assistant" && msg.sources?.length) {
-      const titles = [
-        ...new Set(msg.sources.map((s) => s.title).filter(Boolean)),
-      ];
+      const titles = uniqueCitationTitles(msg.sources);
       if (titles.length) {
         addPageIfNeeded(10);
         doc.setFont("helvetica", "italic");
