@@ -1,6 +1,5 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import { v4 } from "uuid";
-import System from "@/models/system";
 import { useDropzone } from "react-dropzone";
 import DndIcon from "./dnd-icon.png";
 import Workspace from "@/models/workspace";
@@ -46,7 +45,7 @@ export function DnDFileUploaderProvider({
   children,
 }) {
   const [files, setFiles] = useState([]);
-  const [ready, setReady] = useState(false);
+  const [ready, setReady] = useState(true);
   const [dragging, setDragging] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [isEmbedding, setIsEmbedding] = useState(false);
@@ -56,7 +55,9 @@ export function DnDFileUploaderProvider({
   const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
 
   useEffect(() => {
-    System.checkDocumentProcessorOnline().then((status) => setReady(status));
+    // File attachments now use direct server storage, so DnD is always ready.
+    // The collector check is no longer required for chat attachments.
+    setReady(true);
   }, []);
 
   useEffect(() => {
@@ -162,12 +163,12 @@ export function DnDFileUploaderProvider({
           contentString: null,
           status: "in_progress",
           error: null,
-          type: "upload",
+          type: "attachment",
         });
       }
     }
     setFiles((prev) => [...prev, ...newAccepted]);
-    embedEligibleAttachments(newAccepted);
+    uploadDirectAttachments(newAccepted);
   }
 
   /**
@@ -197,106 +198,67 @@ export function DnDFileUploaderProvider({
           contentString: null,
           status: "in_progress",
           error: null,
-          type: "upload",
+          type: "attachment",
         });
       }
     }
 
     setFiles((prev) => [...prev, ...newAccepted]);
-    embedEligibleAttachments(newAccepted);
+    uploadDirectAttachments(newAccepted);
   }
 
   /**
-   * Embeds attachments that are eligible for embedding - basically files that are not images.
+   * Upload non-image files as direct chat attachments via the server attachment endpoint.
+   * Files are stored in server/storage/attachments/ and their content is extracted for LLM context.
    * @param {Attachment[]} newAttachments
    */
-  async function embedEligibleAttachments(newAttachments = []) {
-    window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
-    const promises = [];
-
-    const { currentContextTokenCount, contextWindow } =
-      await Workspace.getParsedFiles(workspace.slug, threadSlug);
-    const workspaceContextWindow = contextWindow
-      ? Math.floor(contextWindow * Workspace.maxContextWindowLimit)
-      : Number.POSITIVE_INFINITY;
-    setMaxTokens(workspaceContextWindow);
-
-    let totalTokenCount = currentContextTokenCount;
-    let batchPendingFiles = [];
-
-    for (const attachment of newAttachments) {
-      // Images/attachments are chat specific.
-      if (attachment.type === "attachment") continue;
-
-      const formData = new FormData();
-      formData.append("file", attachment.file, attachment.file.name);
-      formData.append("threadSlug", threadSlug || null);
-      promises.push(
-        Workspace.parseFile(workspace.slug, formData).then(
-          async ({ response, data }) => {
-            if (!response.ok) {
-              const updates = {
-                status: "failed",
-                error: data?.error ?? null,
-              };
-              setFiles((prev) =>
-                prev.map(
-                  (
-                    /** @type {Attachment} */
-                    prevFile
-                  ) =>
-                    prevFile.uid !== attachment.uid
-                      ? prevFile
-                      : { ...prevFile, ...updates }
-                )
-              );
-              return;
-            }
-            // Will always be one file in the array
-            /** @type {ParsedFile} */
-            const file = data.files[0];
-
-            // Add token count for this file
-            // and add it to the batch pending files
-            totalTokenCount += file.tokenCountEstimate;
-            batchPendingFiles.push({
-              attachment,
-              parsedFileId: file.id,
-              tokenCount: file.tokenCountEstimate,
-            });
-
-            if (totalTokenCount > workspaceContextWindow) {
-              setTokenCount(totalTokenCount);
-              setPendingFiles(batchPendingFiles);
-              setShowWarningModal(true);
-              return;
-            }
-
-            // File is within limits, keep in parsed files
-            const result = { success: true, document: file };
-            const updates = {
-              status: result.success ? "added_context" : "failed",
-              error: result.error ?? null,
-              document: result.document,
-            };
-
-            setFiles((prev) =>
-              prev.map(
-                (
-                  /** @type {Attachment} */
-                  prevFile
-                ) =>
-                  prevFile.uid !== attachment.uid
-                    ? prevFile
-                    : { ...prevFile, ...updates }
-              )
-            );
-          }
-        )
-      );
+  async function uploadDirectAttachments(newAttachments = []) {
+    const pendingUploads = newAttachments.filter(
+      (a) => a.type === "attachment" && a.status === "in_progress"
+    );
+    if (pendingUploads.length === 0) {
+      window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT));
+      return;
     }
 
-    // Wait for all promises to resolve in some way before dispatching the event to unlock the send button
+    window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSING_EVENT));
+    const promises = pendingUploads.map((attachment) => {
+      const formData = new FormData();
+      formData.append("file", attachment.file, attachment.file.name);
+      return Workspace.uploadAttachment(workspace.slug, formData).then(
+        ({ response, data }) => {
+          if (!response.ok) {
+            setFiles((prev) =>
+              prev.map((prevFile) =>
+                prevFile.uid !== attachment.uid
+                  ? prevFile
+                  : {
+                      ...prevFile,
+                      status: "failed",
+                      error: data?.error ?? "Upload failed.",
+                    }
+              )
+            );
+            return;
+          }
+
+          const { attachment: uploaded } = data;
+          setFiles((prev) =>
+            prev.map((prevFile) =>
+              prevFile.uid !== attachment.uid
+                ? prevFile
+                : {
+                    ...prevFile,
+                    status: "success",
+                    contentString: uploaded.contentString,
+                    error: null,
+                  }
+            )
+          );
+        }
+      );
+    });
+
     Promise.all(promises).finally(() =>
       window.dispatchEvent(new CustomEvent(ATTACHMENTS_PROCESSED_EVENT))
     );

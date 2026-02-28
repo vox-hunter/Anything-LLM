@@ -261,6 +261,20 @@ const Workspace = {
     return { response, data };
   },
 
+  uploadAttachment: async function (slug, formData) {
+    const response = await fetch(
+      `${API_BASE}/workspace/${slug}/upload-attachment`,
+      {
+        method: "POST",
+        body: formData,
+        headers: baseHeaders(),
+      }
+    );
+
+    const data = await response.json();
+    return { response, data };
+  },
+
   getParsedFiles: async function (slug, threadSlug = null) {
     const basePath = new URL(`${fullApiUrl()}/workspace/${slug}/parsed-files`);
     if (threadSlug) basePath.searchParams.set("threadSlug", threadSlug);
