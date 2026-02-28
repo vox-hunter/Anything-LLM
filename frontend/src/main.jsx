@@ -68,6 +68,15 @@ const router = createBrowserRouter([
           return { element: <InvitePage /> };
         },
       },
+      {
+        path: "/share/:token",
+        lazy: async () => {
+          const { default: SharedThread } = await import(
+            "@/pages/SharedThread"
+          );
+          return { element: <SharedThread /> };
+        },
+      },
       // Admin routes
       {
         path: "/settings/llm-preference",
