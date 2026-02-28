@@ -108,6 +108,7 @@ export default function ThreadItem({
             aria-current={isActive ? "page" : ""}
           >
             <div className="flex items-center gap-x-1">
+              {/* Non-default threads (those with a slug) are branches of the workspace conversation */}
               {thread.slug && (
                 <GitBranch
                   size={14}
