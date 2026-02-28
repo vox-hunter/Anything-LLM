@@ -220,6 +220,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/theme-builder",
+        lazy: async () => {
+          const { default: ThemeBuilder } = await import(
+            "@/pages/GeneralSettings/Appearance/ThemeBuilder"
+          );
+          return { element: <ManagerRoute Component={ThemeBuilder} /> };
+        },
+      },
+      {
         path: "/settings/default-system-prompt",
         lazy: async () => {
           const { default: DefaultSystemPrompt } = await import(

@@ -92,6 +92,7 @@ const TRANSLATIONS = {
     interface: "UI Preferences",
     branding: "Branding & Whitelabeling",
     chat: "Chat",
+    "theme-builder": "Theme Builder",
     "api-keys": "Developer API",
     llm: "LLM",
     transcription: "Transcription",
@@ -483,6 +484,11 @@ const TRANSLATIONS = {
         title: "Enable Spellcheck",
         description: "Enable or disable spellcheck in the chat input field",
       },
+    },
+    theme_builder: {
+      title: "Theme Builder",
+      description:
+        "Create and manage custom color themes for your instance.",
     },
     items: {
       theme: {

@@ -139,6 +139,9 @@ export default {
     branding: () => {
       return "/settings/branding";
     },
+    themeBuilder: () => {
+      return "/settings/theme-builder";
+    },
     agentSkills: () => {
       return "/settings/agents";
     },
