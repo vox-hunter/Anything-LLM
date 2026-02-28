@@ -89,6 +89,8 @@ const CustomTheme = {
       if (Object.keys(updateData).length === 0)
         throw new Error("No valid fields to update.");
 
+      updateData.lastUpdatedAt = new Date();
+
       const theme = await prisma.custom_themes.update({
         where: { id: Number(id) },
         data: updateData,
