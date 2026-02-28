@@ -1,6 +1,5 @@
 const path = require("path");
 const fs = require("fs");
-const { v4: uuidv4 } = require("uuid");
 const { handleAttachmentUpload } = require("../utils/files/multer");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
 const {
@@ -83,12 +82,17 @@ function isTextFile(mime, originalName) {
 }
 
 /**
+ * Maximum number of characters to read from a text file for LLM context.
+ */
+const MAX_TEXT_CONTENT_LENGTH = 100000;
+
+/**
  * Read text content from a file, truncated to a max length.
  * @param {string} filePath
  * @param {number} maxLength
  * @returns {string|null}
  */
-function readTextContent(filePath, maxLength = 100000) {
+function readTextContent(filePath, maxLength = MAX_TEXT_CONTENT_LENGTH) {
   try {
     const content = fs.readFileSync(filePath, "utf8");
     return content.length > maxLength
