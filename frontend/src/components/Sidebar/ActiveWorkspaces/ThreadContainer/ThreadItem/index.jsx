@@ -5,6 +5,7 @@ import showToast from "@/utils/toast";
 import {
   ArrowCounterClockwise,
   DotsThree,
+  GitBranch,
   PencilSimple,
   Trash,
   X,
@@ -106,15 +107,24 @@ export default function ThreadItem({
             className="w-full pl-2 py-1 overflow-hidden"
             aria-current={isActive ? "page" : ""}
           >
-            <p
-              className={`text-left text-sm truncate max-w-[150px] ${
-                isActive
-                  ? "font-semibold text-theme-text-primary light:text-blue-900"
-                  : "text-theme-text-primary font-medium light:text-slate-800"
-              }`}
-            >
-              {thread.name}
-            </p>
+            <div className="flex items-center gap-x-1">
+              {/* Non-default threads (those with a slug) are branches of the workspace conversation */}
+              {thread.slug && (
+                <GitBranch
+                  size={14}
+                  className="shrink-0 text-theme-text-primary opacity-50"
+                />
+              )}
+              <p
+                className={`text-left text-sm truncate max-w-[135px] ${
+                  isActive
+                    ? "font-semibold text-theme-text-primary light:text-blue-900"
+                    : "text-theme-text-primary font-medium light:text-slate-800"
+                }`}
+              >
+                {thread.name}
+              </p>
+            </div>
           </a>
         )}
         {!!thread.slug && !thread.deleted && !thread.virtual && (
