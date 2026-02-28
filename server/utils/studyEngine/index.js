@@ -296,8 +296,7 @@ async function invokeTutorAgent(
       component_id: uuidv4(),
       content: {
         title: "Error",
-        explanation:
-          "Unable to generate a response. Please try again.",
+        explanation: "Unable to generate a response. Please try again.",
         key_points: [],
       },
     };

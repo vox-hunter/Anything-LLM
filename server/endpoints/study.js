@@ -23,8 +23,11 @@ function studyEndpoints(app) {
         const user = await userFromSession(request, response);
         const workspace = response.locals.workspace;
 
-        const { session, response: agResponse, error } =
-          await startStudySession(workspace, user);
+        const {
+          session,
+          response: agResponse,
+          error,
+        } = await startStudySession(workspace, user);
 
         if (error) {
           return response.status(500).json({ success: false, error });
