@@ -41,7 +41,7 @@ export const PARSED_FILE_ATTACHMENT_REMOVED_EVENT =
 
 export function DnDFileUploaderProvider({
   workspace,
-  threadSlug = null,
+  threadSlug: _threadSlug = null,
   children,
 }) {
   const [files, setFiles] = useState([]);
@@ -52,7 +52,7 @@ export function DnDFileUploaderProvider({
   const [embedProgress, setEmbedProgress] = useState(0);
   const [pendingFiles, setPendingFiles] = useState([]);
   const [tokenCount, setTokenCount] = useState(0);
-  const [maxTokens, setMaxTokens] = useState(Number.POSITIVE_INFINITY);
+  const [maxTokens, _setMaxTokens] = useState(Number.POSITIVE_INFINITY);
 
   useEffect(() => {
     // File attachments now use direct server storage, so DnD is always ready.

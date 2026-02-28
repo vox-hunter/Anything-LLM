@@ -4,6 +4,8 @@
 server/.env
 storage/assets/*
 !storage/assets/anything-llm.png
+storage/attachments/*
+!storage/attachments/.gitkeep
 storage/documents/*
 storage/comkey/*
 storage/tmp/*
