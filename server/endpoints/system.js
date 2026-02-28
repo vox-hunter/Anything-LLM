@@ -61,6 +61,7 @@ const {
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
 const { VALID_COMMANDS } = require("../utils/chats");
+const { CustomTheme } = require("../models/customTheme");
 
 function systemEndpoints(app) {
   if (!app) return;
@@ -1534,6 +1535,72 @@ function systemEndpoints(app) {
           success: false,
           error: `Unable to connect to ${engine}. Please verify your connection details.`,
         });
+      }
+    }
+  );
+
+  // Custom Themes endpoints
+  app.get(
+    "/custom-themes",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (_request, response) => {
+      try {
+        const themes = await CustomTheme.where();
+        response.status(200).json({ themes });
+      } catch (error) {
+        console.error(error.message, error);
+        response.status(500).json({ themes: [], error: error.message });
+      }
+    }
+  );
+
+  app.post(
+    "/custom-themes",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { name, colors } = reqBody(request);
+        const { theme, error } = await CustomTheme.create({ name, colors });
+        if (error) return response.status(400).json({ theme: null, error });
+        response.status(201).json({ theme });
+      } catch (error) {
+        console.error(error.message, error);
+        response.status(500).json({ theme: null, error: error.message });
+      }
+    }
+  );
+
+  app.put(
+    "/custom-themes/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        const { name, colors } = reqBody(request);
+        const { theme, error } = await CustomTheme.update(Number(id), {
+          name,
+          colors,
+        });
+        if (error) return response.status(400).json({ theme: null, error });
+        response.status(200).json({ theme });
+      } catch (error) {
+        console.error(error.message, error);
+        response.status(500).json({ theme: null, error: error.message });
+      }
+    }
+  );
+
+  app.delete(
+    "/custom-themes/:id",
+    [validatedRequest, flexUserRoleValid([ROLES.admin, ROLES.manager])],
+    async (request, response) => {
+      try {
+        const { id } = request.params;
+        await CustomTheme.delete({ id: Number(id) });
+        response.status(200).json({ success: true });
+      } catch (error) {
+        console.error(error.message, error);
+        response.status(500).json({ success: false, error: error.message });
       }
     }
   );

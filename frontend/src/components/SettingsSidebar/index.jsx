@@ -348,6 +348,12 @@ const SidebarOptions = ({ user = null, t }) => (
               flex: true,
               roles: ["admin", "manager"],
             },
+            {
+              btnText: t("settings.theme-builder"),
+              href: paths.settings.themeBuilder(),
+              flex: true,
+              roles: ["admin", "manager"],
+            },
           ]}
         />
         <Option
