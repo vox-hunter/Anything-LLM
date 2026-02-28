@@ -23,6 +23,7 @@ const { EventLogs } = require("../models/eventLogs");
 const {
   WorkspaceSuggestedMessages,
 } = require("../models/workspacesSuggestedMessages");
+const { MessageReaction } = require("../models/messageReaction");
 const { validWorkspaceSlug } = require("../utils/middleware/validWorkspace");
 const { convertToChatHistory } = require("../utils/helpers/chat/responses");
 const { CollectorApi } = require("../utils/collectorApi");
@@ -510,6 +511,79 @@ function workspaceEndpoints(app) {
         response.status(200).json({ success: result });
       } catch (error) {
         console.error("Error updating chat feedback:", error);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.post(
+    "/workspace/:slug/chat-reaction/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        const { reaction } = reqBody(request);
+        const user = await userFromSession(request, response);
+
+        if (!MessageReaction.validReactions.includes(reaction)) {
+          return response.status(400).json({ error: "Invalid reaction type" });
+        }
+
+        const existingChat = await WorkspaceChats.get({
+          id: Number(chatId),
+          workspaceId: response.locals.workspace.id,
+        });
+        if (!existingChat) {
+          return response.status(404).end();
+        }
+
+        const record = await MessageReaction.create({
+          chatId: Number(chatId),
+          userId: user?.id || null,
+          reaction,
+        });
+        response.status(200).json({ reaction: record });
+      } catch (error) {
+        console.error("Error adding chat reaction:", error);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.delete(
+    "/workspace/:slug/chat-reaction/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        const { reaction } = reqBody(request);
+        const user = await userFromSession(request, response);
+
+        const result = await MessageReaction.remove({
+          chatId: Number(chatId),
+          userId: user?.id || null,
+          reaction,
+        });
+        response.status(200).json({ success: result });
+      } catch (error) {
+        console.error("Error removing chat reaction:", error);
+        response.status(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/workspace/:slug/chat-reactions/:chatId",
+    [validatedRequest, flexUserRoleValid([ROLES.all]), validWorkspaceSlug],
+    async (request, response) => {
+      try {
+        const { chatId } = request.params;
+        const reactions = await MessageReaction.reactionsForChat(
+          Number(chatId)
+        );
+        response.status(200).json({ reactions });
+      } catch (error) {
+        console.error("Error fetching chat reactions:", error);
         response.status(500).end();
       }
     }

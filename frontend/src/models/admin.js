@@ -232,6 +232,19 @@ const Admin = {
         return false;
       });
   },
+
+  // Reaction Report
+  reactionReport: async () => {
+    return await fetch(`${API_BASE}/admin/reaction-report`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => res.json())
+      .catch((e) => {
+        console.error(e);
+        return { report: {}, workspaceMap: {}, validReactions: [] };
+      });
+  },
 };
 
 export default Admin;

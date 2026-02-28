@@ -78,6 +78,42 @@ const Workspace = {
       .catch(() => false);
     return result;
   },
+  addChatReaction: async function (chatId, slug, reaction) {
+    return await fetch(
+      `${API_BASE}/workspace/${slug}/chat-reaction/${chatId}`,
+      {
+        method: "POST",
+        headers: baseHeaders(),
+        body: JSON.stringify({ reaction }),
+      }
+    )
+      .then((res) => res.json())
+      .catch(() => null);
+  },
+  removeChatReaction: async function (chatId, slug, reaction) {
+    return await fetch(
+      `${API_BASE}/workspace/${slug}/chat-reaction/${chatId}`,
+      {
+        method: "DELETE",
+        headers: baseHeaders(),
+        body: JSON.stringify({ reaction }),
+      }
+    )
+      .then((res) => res.json())
+      .catch(() => null);
+  },
+  getChatReactions: async function (chatId, slug) {
+    return await fetch(
+      `${API_BASE}/workspace/${slug}/chat-reactions/${chatId}`,
+      {
+        method: "GET",
+        headers: baseHeaders(),
+      }
+    )
+      .then((res) => res.json())
+      .then((res) => res?.reactions || [])
+      .catch(() => []);
+  },
 
   deleteChats: async function (slug = "", chatIds = []) {
     return await fetch(`${API_BASE}/workspace/${slug}/delete-chats`, {

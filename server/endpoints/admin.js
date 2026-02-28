@@ -2,6 +2,7 @@ const { ApiKey } = require("../models/apiKeys");
 const { Document } = require("../models/documents");
 const { EventLogs } = require("../models/eventLogs");
 const { Invite } = require("../models/invite");
+const { MessageReaction } = require("../models/messageReaction");
 const { SystemSettings } = require("../models/systemSettings");
 const { Telemetry } = require("../models/telemetry");
 const { User } = require("../models/user");
@@ -488,6 +489,29 @@ function adminEndpoints(app) {
           response?.locals?.user?.id
         );
         return response.status(200).end();
+      } catch (e) {
+        console.error(e);
+        response.sendStatus(500).end();
+      }
+    }
+  );
+
+  app.get(
+    "/admin/reaction-report",
+    [validatedRequest, strictMultiUserRoleValid([ROLES.admin])],
+    async (_request, response) => {
+      try {
+        const report = await MessageReaction.aggregateByWorkspace();
+        const workspaces = await Workspace.where();
+        const workspaceMap = {};
+        for (const ws of workspaces) {
+          workspaceMap[ws.id] = ws.name;
+        }
+        response.status(200).json({
+          report,
+          workspaceMap,
+          validReactions: MessageReaction.validReactions,
+        });
       } catch (e) {
         console.error(e);
         response.sendStatus(500).end();

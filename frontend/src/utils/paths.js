@@ -152,6 +152,9 @@ export default {
     logs: () => {
       return "/settings/event-logs";
     },
+    reactionReport: () => {
+      return "/settings/reaction-report";
+    },
     privacy: () => {
       return "/settings/privacy";
     },

@@ -174,6 +174,15 @@ const router = createBrowserRouter([
         },
       },
       {
+        path: "/settings/reaction-report",
+        lazy: async () => {
+          const { default: ReactionReport } = await import(
+            "@/pages/GeneralSettings/ReactionReport"
+          );
+          return { element: <AdminRoute Component={ReactionReport} /> };
+        },
+      },
+      {
         path: "/settings/embed-chat-widgets",
         lazy: async () => {
           const { default: ChatEmbedWidgets } = await import(
