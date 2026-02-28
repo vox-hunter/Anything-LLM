@@ -6,11 +6,13 @@ import {
   ArrowCounterClockwise,
   DotsThree,
   PencilSimple,
+  ShareNetwork,
   Trash,
   X,
 } from "@phosphor-icons/react";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import ShareThreadModal from "@/components/Modals/ShareThread";
 
 const THREAD_CALLOUT_DETAIL_WIDTH = 26;
 export default function ThreadItem({
@@ -174,6 +176,7 @@ function OptionsMenu({
   currentThreadSlug,
 }) {
   const menuRef = useRef(null);
+  const [showShareModal, setShowShareModal] = useState(false);
 
   // Ref menu options
   const outsideClick = (e) => {
@@ -270,6 +273,17 @@ function OptionsMenu({
         <p className="text-sm">Rename</p>
       </button>
       <button
+        onClick={() => {
+          close();
+          setShowShareModal(true);
+        }}
+        type="button"
+        className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-slate-500/20 text-slate-300 light:text-theme-text-primary"
+      >
+        <ShareNetwork size={18} />
+        <p className="text-sm">Share</p>
+      </button>
+      <button
         onClick={handleDelete}
         type="button"
         className="w-full rounded-md flex items-center p-2 gap-x-2 hover:bg-red-500/20 text-slate-300 light:text-theme-text-primary hover:text-red-100"
@@ -277,6 +291,13 @@ function OptionsMenu({
         <Trash size={18} />
         <p className="text-sm">Delete Thread</p>
       </button>
+      {showShareModal && (
+        <ShareThreadModal
+          workspace={workspace}
+          thread={thread}
+          onClose={() => setShowShareModal(false)}
+        />
+      )}
     </div>
   );
 }

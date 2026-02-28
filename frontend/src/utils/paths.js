@@ -92,6 +92,9 @@ export default {
       return `/workspace/${wsSlug}/t/${threadSlug}`;
     },
   },
+  sharedThread: (token) => {
+    return `/share/${token}`;
+  },
   apiDocs: () => {
     return `${API_BASE}/docs`;
   },
