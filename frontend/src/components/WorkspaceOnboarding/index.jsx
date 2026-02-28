@@ -70,20 +70,6 @@ export default function WorkspaceOnboardingChecklist({ workspace }) {
     setDismissed(true);
   }
 
-  async function handleCompleteStep(step) {
-    if (onboarding[step]) return;
-    const updated = await WorkspaceOnboarding.completeStep(
-      workspace.slug,
-      step
-    );
-    if (updated) {
-      setOnboarding(updated);
-      if (updated.completed) {
-        setTimeout(() => setDismissed(true), 1500);
-      }
-    }
-  }
-
   return (
     <div className="w-full max-w-md mx-auto my-4 bg-theme-bg-secondary rounded-xl border border-theme-sidebar-border shadow-lg overflow-hidden">
       <div className="flex items-center justify-between px-4 pt-4 pb-2">
