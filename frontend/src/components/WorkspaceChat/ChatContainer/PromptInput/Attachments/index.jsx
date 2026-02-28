@@ -99,7 +99,7 @@ function AttachmentItem({ attachment }) {
   }
 
   if (type === "attachment") {
-    if (contentString) {
+    if (contentString && file.type?.startsWith("image/")) {
       return (
         <div
           data-tooltip-id="attachment-status-tooltip"
@@ -150,7 +150,7 @@ function AttachmentItem({ attachment }) {
             {file.name}
           </p>
           <p className="text-theme-attachment-text-secondary text-[10px] leading-[14px] font-medium">
-            Image attached!
+            File attached!
           </p>
         </div>
       </div>

@@ -199,14 +199,32 @@ export default memo(
 function ChatAttachments({ attachments = [] }) {
   if (!attachments.length) return null;
   return (
-    <div className="flex flex-wrap gap-2">
-      {attachments.map((item) => (
-        <img
-          key={item.name}
-          src={item.contentString}
-          className="max-w-[300px] rounded-md"
-        />
-      ))}
+    <div className="flex flex-wrap gap-2 mt-2">
+      {attachments.map((item) => {
+        const isImage =
+          item.mime?.startsWith("image/") ||
+          item.contentString?.startsWith("data:image/");
+        if (isImage && item.contentString) {
+          return (
+            <img
+              key={item.name}
+              src={item.contentString}
+              alt={`Attachment: ${item.name}`}
+              className="max-w-[300px] max-h-[300px] rounded-md object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            />
+          );
+        }
+        return (
+          <div
+            key={item.name}
+            className="flex items-center gap-x-2 rounded-md bg-theme-bg-secondary px-3 py-2 text-xs text-theme-text-primary"
+          >
+            <span className="font-semibold truncate max-w-[200px]">
+              📎 {item.name}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }

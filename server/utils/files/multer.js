@@ -170,9 +170,50 @@ function handlePfpUpload(request, response, next) {
   });
 }
 
+// Chat attachment storage for direct file attachments (bypasses collector)
+const attachmentUploadStorage = multer.diskStorage({
+  destination: function (_, __, cb) {
+    const uploadOutput =
+      process.env.NODE_ENV === "development"
+        ? path.resolve(__dirname, `../../storage/attachments`)
+        : path.resolve(process.env.STORAGE_DIR, "attachments");
+    fs.mkdirSync(uploadOutput, { recursive: true });
+    return cb(null, uploadOutput);
+  },
+  filename: function (req, file, cb) {
+    file.originalname = normalizePath(
+      Buffer.from(file.originalname, "latin1").toString("utf8")
+    );
+    const randomFileName = `${v4()}-${file.originalname}`;
+    req.randomFileName = randomFileName;
+    cb(null, randomFileName);
+  },
+});
+
+/**
+ * Handle chat attachment file uploads - stores in server/storage/attachments/
+ */
+function handleAttachmentUpload(request, response, next) {
+  const upload = multer({ storage: attachmentUploadStorage }).single("file");
+  upload(request, response, function (err) {
+    if (err) {
+      response
+        .status(500)
+        .json({
+          success: false,
+          error: `Invalid file upload. ${err.message}`,
+        })
+        .end();
+      return;
+    }
+    next();
+  });
+}
+
 module.exports = {
   handleFileUpload,
   handleAPIFileUpload,
   handleAssetUpload,
   handlePfpUpload,
+  handleAttachmentUpload,
 };
