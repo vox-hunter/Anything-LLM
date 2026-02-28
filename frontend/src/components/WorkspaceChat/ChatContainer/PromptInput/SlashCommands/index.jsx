@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from "react";
 import SlashCommandIcon from "./icons/SlashCommandIcon";
 import { Tooltip } from "react-tooltip";
 import ResetCommand from "./reset";
+import ClearCommand from "./clear";
+import ExportCommand from "./export";
+import TemplateCommand from "./template";
+import HelpCommand from "./help";
 import EndAgentSession from "./endAgentSession";
 import SlashPresets from "./SlashPresets";
 import { useTranslation } from "react-i18next";
@@ -72,6 +76,14 @@ export function SlashCommands({
           className="w-[600px] bg-theme-action-menu-bg rounded-2xl flex shadow flex-col justify-start items-start gap-2.5 p-2 overflow-y-auto max-h-[200px] no-scroll"
         >
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
+          <ClearCommand sendCommand={sendCommand} setShowing={setShowing} />
+          <ExportCommand sendCommand={sendCommand} setShowing={setShowing} />
+          <TemplateCommand
+            sendCommand={sendCommand}
+            setShowing={setShowing}
+            promptRef={promptRef}
+          />
+          <HelpCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
           <SlashPresets
             sendCommand={sendCommand}

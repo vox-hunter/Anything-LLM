@@ -4,10 +4,16 @@ const { resetMemory } = require("./commands/reset");
 const { convertToPromptHistory } = require("../helpers/chat/responses");
 const { SlashCommandPresets } = require("../../models/slashCommandsPresets");
 const { SystemPromptVariables } = require("../../models/systemPromptVariables");
+const {
+  builtInCommands,
+} = require("../slashCommands");
 
-const VALID_COMMANDS = {
-  "/reset": resetMemory,
-};
+// VALID_COMMANDS is kept for backwards-compatibility with existing code that
+// references it (e.g. stream.js, system endpoints).  It is now derived from the
+// canonical registry in server/utils/slashCommands/.
+const VALID_COMMANDS = Object.fromEntries(
+  Object.entries(builtInCommands).map(([cmd, { handler }]) => [cmd, handler])
+);
 
 async function grepCommand(message, user = null) {
   const userPresets = await SlashCommandPresets.getUserPresets(user?.id);
