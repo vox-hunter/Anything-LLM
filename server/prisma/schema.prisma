@@ -32,10 +32,30 @@ model workspace_documents {
   metadata             String?
   pinned               Boolean?              @default(false)
   watched              Boolean?              @default(false)
+  folderId             Int?
   createdAt            DateTime              @default(now())
   lastUpdatedAt        DateTime              @default(now())
   workspace            workspaces            @relation(fields: [workspaceId], references: [id])
+  folder               document_folders?     @relation(fields: [folderId], references: [id], onDelete: SetNull)
   document_sync_queues document_sync_queues?
+
+  @@index([folderId])
+}
+
+model document_folders {
+  id            Int                    @id @default(autoincrement())
+  name          String
+  workspaceId   Int
+  parentId      Int?
+  createdAt     DateTime               @default(now())
+  lastUpdatedAt DateTime               @default(now())
+  workspace     workspaces             @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  parent        document_folders?      @relation("FolderToSubfolder", fields: [parentId], references: [id], onDelete: SetNull)
+  children      document_folders[]     @relation("FolderToSubfolder")
+  documents     workspace_documents[]
+
+  @@index([workspaceId])
+  @@index([parentId])
 }
 
 model invites {
@@ -147,6 +167,7 @@ model workspaces {
   vectorSearchMode             String?                        @default("default")
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
+  document_folders             document_folders[]
   workspace_suggested_messages workspace_suggested_messages[]
   embed_configs                embed_configs[]
   threads                      workspace_threads[]

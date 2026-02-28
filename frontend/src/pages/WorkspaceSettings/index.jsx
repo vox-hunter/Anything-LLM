@@ -9,6 +9,7 @@ import {
   ArrowUUpLeft,
   ChatText,
   Database,
+  FolderNotch,
   Robot,
   User,
   Wrench,
@@ -21,6 +22,7 @@ import ChatSettings from "./ChatSettings";
 import VectorDatabase from "./VectorDatabase";
 import Members from "./Members";
 import WorkspaceAgentConfiguration from "./AgentConfig";
+import Documents from "./Documents";
 import useUser from "@/hooks/useUser";
 import { useTranslation } from "react-i18next";
 import System from "@/models/system";
@@ -31,6 +33,7 @@ const TABS = {
   "vector-database": VectorDatabase,
   members: Members,
   "agent-config": WorkspaceAgentConfiguration,
+  documents: Documents,
 };
 
 export default function WorkspaceSettings() {
@@ -114,6 +117,12 @@ function ShowWorkspaceChat() {
             title={t("workspaces—settings.agent")}
             icon={<Robot className="h-6 w-6" />}
             to={paths.workspace.settings.agentConfig(slug)}
+          />
+          <TabItem
+            title="Documents"
+            icon={<FolderNotch className="h-6 w-6" />}
+            to={paths.workspace.settings.documents(slug)}
+            visible={["admin", "manager"].includes(user?.role)}
           />
         </div>
         <div className="px-16 py-6">
