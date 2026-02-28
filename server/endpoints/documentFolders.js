@@ -7,10 +7,6 @@ const {
   ROLES,
 } = require("../utils/middleware/multiUserProtected");
 const { validatedRequest } = require("../utils/middleware/validatedRequest");
-const {
-  multiUserMode,
-  userFromSession,
-} = require("../utils/http");
 
 function documentFolderEndpoints(app) {
   if (!app) return;

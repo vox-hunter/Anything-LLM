@@ -126,7 +126,7 @@ const DocumentFolder = {
     try {
       await prisma.workspace_documents.update({
         where: { id: documentId },
-        data: { folderId: folderId },
+        data: { folderId },
       });
       return true;
     } catch (error) {
