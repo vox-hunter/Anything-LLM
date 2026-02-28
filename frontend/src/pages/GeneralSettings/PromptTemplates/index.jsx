@@ -73,9 +73,8 @@ export default function PromptTemplates() {
             </div>
             <p className="text-xs leading-[18px] font-base text-theme-text-secondary mt-2">
               Create and manage reusable prompt templates with variable
-              placeholders like {"{{topic}}"} or {"{{language}}"}.
-              Templates can be quickly inserted into chat using the /template
-              slash command.
+              placeholders like {"{{topic}}"} or {"{{language}}"}. Templates can
+              be quickly inserted into chat using the /template slash command.
             </p>
           </div>
           <div className="w-full justify-end flex">
@@ -260,12 +259,7 @@ function EditTemplateModal({ closeModal, onSuccess, template }) {
   );
 }
 
-function TemplateFormModal({
-  title,
-  onClose,
-  onSubmit,
-  initialData = {},
-}) {
+function TemplateFormModal({ title, onClose, onSubmit, initialData = {} }) {
   return (
     <div className="w-full max-w-2xl bg-theme-bg-secondary rounded-lg shadow border-2 border-theme-modal-border overflow-hidden">
       <div className="relative p-6 border-b rounded-t border-theme-modal-border">
@@ -316,15 +310,15 @@ function TemplateFormModal({
                   Template Content
                 </label>
                 <p className="text-xs text-theme-text-secondary mb-2">
-                  Use {"{{variableName}}"} for placeholders that users will
-                  fill in when using the template.
+                  Use {"{{variableName}}"} for placeholders that users will fill
+                  in when using the template.
                 </p>
                 <textarea
                   name="content"
                   id="content"
                   autoComplete="off"
                   placeholder={
-                    'e.g., Explain {{topic}} in {{language}} for a {{audience}} audience.'
+                    "e.g., Explain {{topic}} in {{language}} for a {{audience}} audience."
                   }
                   defaultValue={initialData.content || ""}
                   required={true}

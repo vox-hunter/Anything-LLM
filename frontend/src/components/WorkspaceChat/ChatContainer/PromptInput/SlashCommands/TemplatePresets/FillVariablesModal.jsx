@@ -14,7 +14,12 @@ function extractVariables(content) {
 /**
  * Modal that asks the user to fill in template variables before inserting.
  */
-export default function FillVariablesModal({ isOpen, onClose, template, onInsert }) {
+export default function FillVariablesModal({
+  isOpen,
+  onClose,
+  template,
+  onInsert,
+}) {
   const variables = extractVariables(template?.content || "");
   const [values, setValues] = useState({});
 

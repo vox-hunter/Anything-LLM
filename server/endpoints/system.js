@@ -1649,7 +1649,7 @@ function systemEndpoints(app) {
         if (!ownsTemplate)
           return response
             .status(403)
-            .json({ message: "Failed to delete template" });
+            .json({ message: "Template not found or access denied" });
 
         await PromptTemplate.delete(Number(templateId));
         response.sendStatus(204);

@@ -5,7 +5,11 @@ import System from "@/models/system";
 import { FileText } from "@phosphor-icons/react";
 import FillVariablesModal from "./FillVariablesModal";
 
-export default function TemplatePresets({ setShowing, sendCommand, promptRef }) {
+export default function TemplatePresets({
+  setShowing,
+  sendCommand,
+  promptRef,
+}) {
   const isActiveAgentSession = useIsAgentSessionActive();
   const {
     isOpen: isFillModalOpen,
@@ -15,16 +19,16 @@ export default function TemplatePresets({ setShowing, sendCommand, promptRef }) 
   const [templates, setTemplates] = useState([]);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
 
+  const fetchTemplates = async () => {
+    const templates = await System.getPromptTemplates();
+    setTemplates(templates);
+  };
+
   useEffect(() => {
     fetchTemplates();
   }, []);
 
   if (isActiveAgentSession) return null;
-
-  const fetchTemplates = async () => {
-    const templates = await System.getPromptTemplates();
-    setTemplates(templates);
-  };
 
   const handleUseTemplate = (template) => {
     const variables = template.content.match(/\{\{(\w+)\}\}/g);

@@ -789,9 +789,7 @@ const System = {
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok)
-          throw new Error(
-            data.message || "Error creating prompt template."
-          );
+          throw new Error(data.message || "Error creating prompt template.");
         return data;
       })
       .then((res) => ({ template: res.template, error: null }))
@@ -809,9 +807,7 @@ const System = {
       .then(async (res) => {
         const data = await res.json();
         if (!res.ok)
-          throw new Error(
-            data.message || "Could not update prompt template."
-          );
+          throw new Error(data.message || "Could not update prompt template.");
         return data;
       })
       .then((res) => ({ template: res.template, error: null }))
