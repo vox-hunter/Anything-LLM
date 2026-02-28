@@ -30,3 +30,4 @@ yarn-error.log
 
 # Local SSL Certs for HTTPS
 sslcert
+package-lock.json

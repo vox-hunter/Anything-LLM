@@ -60,6 +60,7 @@ const {
 } = require("../utils/middleware/simpleSSOEnabled");
 const { TemporaryAuthToken } = require("../models/temporaryAuthToken");
 const { SystemPromptVariables } = require("../models/systemPromptVariables");
+const { PromptTemplate } = require("../models/promptTemplate");
 const { VALID_COMMANDS } = require("../utils/chats");
 
 function systemEndpoints(app) {
@@ -1534,6 +1535,127 @@ function systemEndpoints(app) {
           success: false,
           error: `Unable to connect to ${engine}. Please verify your connection details.`,
         });
+      }
+    }
+  );
+
+  // Prompt Template CRUD endpoints
+  app.get(
+    "/system/prompt-templates",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const templates = await PromptTemplate.getUserTemplates(user?.id);
+        response.status(200).json({ templates });
+      } catch (error) {
+        console.error("Error fetching prompt templates:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/prompt-templates",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { title, content, description } = reqBody(request);
+
+        if (!title || !content) {
+          return response
+            .status(400)
+            .json({ message: "Title and content are required" });
+        }
+
+        const templateData = {
+          title: String(title),
+          content: String(content),
+          description: String(description || ""),
+        };
+
+        const template = await PromptTemplate.create(user?.id, templateData);
+        if (!template) {
+          return response
+            .status(500)
+            .json({ message: "Failed to create prompt template" });
+        }
+        response.status(201).json({ template });
+      } catch (error) {
+        console.error("Error creating prompt template:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.post(
+    "/system/prompt-templates/:templateId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const user = await userFromSession(request, response);
+        const { templateId } = request.params;
+        const { title, content, description } = reqBody(request);
+
+        if (!title || !content) {
+          return response
+            .status(400)
+            .json({ message: "Title and content are required" });
+        }
+
+        const ownsTemplate = await PromptTemplate.get({
+          userId: user?.id ?? null,
+          id: Number(templateId),
+        });
+        if (!ownsTemplate)
+          return response
+            .status(404)
+            .json({ message: "Template not found" });
+
+        const updates = {
+          title: String(title),
+          content: String(content),
+          description: String(description || ""),
+        };
+
+        const template = await PromptTemplate.update(
+          Number(templateId),
+          updates
+        );
+        if (!template) return response.sendStatus(422);
+        response
+          .status(200)
+          .json({ template: { ...ownsTemplate, ...updates } });
+      } catch (error) {
+        console.error("Error updating prompt template:", error);
+        response.status(500).json({ message: "Internal server error" });
+      }
+    }
+  );
+
+  app.delete(
+    "/system/prompt-templates/:templateId",
+    [validatedRequest, flexUserRoleValid([ROLES.all])],
+    async (request, response) => {
+      try {
+        const { templateId } = request.params;
+        const user = await userFromSession(request, response);
+
+        const ownsTemplate = await PromptTemplate.get({
+          userId: user?.id ?? null,
+          id: Number(templateId),
+        });
+        if (!ownsTemplate)
+          return response
+            .status(403)
+            .json({ message: "Template not found or access denied" });
+
+        await PromptTemplate.delete(Number(templateId));
+        response.sendStatus(204);
+      } catch (error) {
+        console.error("Error deleting prompt template:", error);
+        response.status(500).json({ message: "Internal server error" });
       }
     }
   );

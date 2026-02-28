@@ -372,6 +372,15 @@ const router = createBrowserRouter([
           return { element: <ManagerRoute Component={MobileConnections} /> };
         },
       },
+      {
+        path: "/settings/prompt-templates",
+        lazy: async () => {
+          const { default: PromptTemplates } = await import(
+            "@/pages/GeneralSettings/PromptTemplates"
+          );
+          return { element: <AdminRoute Component={PromptTemplates} /> };
+        },
+      },
       // Catch-all route for 404s
       {
         path: "*",

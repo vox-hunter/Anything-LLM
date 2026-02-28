@@ -85,6 +85,7 @@ model users {
   prompt_history               prompt_history[]
   desktop_mobile_devices       desktop_mobile_devices[]
   workspace_parsed_files       workspace_parsed_files[]
+  prompt_templates             prompt_templates[]
 }
 
 model recovery_codes {
@@ -392,4 +393,18 @@ model workspace_parsed_files {
 
   @@index([workspaceId])
   @@index([userId])
+}
+
+model prompt_templates {
+  id            Int      @id @default(autoincrement())
+  title         String
+  content       String
+  description   String   @default("")
+  uid           Int      @default(0) // 0 is null user
+  userId        Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([uid, title])
 }

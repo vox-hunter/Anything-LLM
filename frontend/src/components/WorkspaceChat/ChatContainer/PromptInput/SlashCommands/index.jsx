@@ -4,6 +4,7 @@ import { Tooltip } from "react-tooltip";
 import ResetCommand from "./reset";
 import EndAgentSession from "./endAgentSession";
 import SlashPresets from "./SlashPresets";
+import TemplatePresets from "./TemplatePresets";
 import { useTranslation } from "react-i18next";
 import { useSlashCommandKeyboardNavigation } from "@/hooks/useSlashCommandKeyboardNavigation";
 
@@ -74,6 +75,11 @@ export function SlashCommands({
           <ResetCommand sendCommand={sendCommand} setShowing={setShowing} />
           <EndAgentSession sendCommand={sendCommand} setShowing={setShowing} />
           <SlashPresets
+            sendCommand={sendCommand}
+            setShowing={setShowing}
+            promptRef={promptRef}
+          />
+          <TemplatePresets
             sendCommand={sendCommand}
             setShowing={setShowing}
             promptRef={promptRef}
