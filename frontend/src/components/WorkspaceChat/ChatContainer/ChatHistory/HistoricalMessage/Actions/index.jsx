@@ -1,7 +1,14 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
+import {
+  Check,
+  ThumbsUp,
+  ArrowsClockwise,
+  Copy,
+  BookmarkSimple,
+} from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
+import Bookmark from "@/models/bookmark";
 import { EditMessageAction } from "./EditMessage";
 import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
@@ -54,6 +61,9 @@ const Actions = ({
               tooltipContent={t("chat_window.good_response")}
               IconComponent={ThumbsUp}
             />
+          )}
+          {chatId && !isEditing && (
+            <BookmarkButton chatId={chatId} />
           )}
           <ActionMenu
             chatId={chatId}
@@ -144,6 +154,44 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
           size={20}
           className="mb-1"
           weight="fill"
+        />
+      </button>
+    </div>
+  );
+}
+
+function BookmarkButton({ chatId }) {
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const { t } = useTranslation();
+
+  async function toggleBookmark() {
+    if (isBookmarked) return;
+    const { bookmark } = await Bookmark.create(chatId);
+    if (bookmark) setIsBookmarked(true);
+  }
+
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={toggleBookmark}
+        data-tooltip-id="bookmark-button"
+        data-tooltip-content={
+          isBookmarked
+            ? t("chat_window.bookmarked", "Bookmarked")
+            : t("chat_window.bookmark", "Bookmark")
+        }
+        className="text-zinc-300"
+        aria-label={
+          isBookmarked
+            ? t("chat_window.bookmarked", "Bookmarked")
+            : t("chat_window.bookmark", "Bookmark")
+        }
+      >
+        <BookmarkSimple
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={20}
+          className="mb-1"
+          weight={isBookmarked ? "fill" : "regular"}
         />
       </button>
     </div>

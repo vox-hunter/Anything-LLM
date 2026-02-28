@@ -10,3 +10,6 @@ aws_cf_deploy_anything_llm.json
 yarn.lock
 *.bak
 .idea
+server/storage/anythingllm.db
+server/storage/anythingllm.db-journal
+package-lock.json

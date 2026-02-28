@@ -1,9 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
-import { List, Plus } from "@phosphor-icons/react";
+import { List, Plus, BookmarkSimple } from "@phosphor-icons/react";
 import NewWorkspaceModal, {
   useNewWorkspaceModal,
 } from "../Modals/NewWorkspace";
 import ActiveWorkspaces from "./ActiveWorkspaces";
+import BookmarksPanel from "./BookmarksPanel";
 import useLogo from "@/hooks/useLogo";
 import useUser from "@/hooks/useUser";
 import Footer from "../Footer";
@@ -21,6 +22,7 @@ export default function Sidebar() {
   const { logo } = useLogo();
   const sidebarRef = useRef(null);
   const { showSidebar, setShowSidebar, canToggleSidebar } = useSidebarToggle();
+  const [showBookmarks, setShowBookmarks] = useState(false);
   const {
     showing: showingNewWsModal,
     showModal: showNewWsModal,
@@ -64,6 +66,7 @@ export default function Sidebar() {
                   <div className="flex flex-col gap-y-[14px]">
                     <SearchBox user={user} showNewWsModal={showNewWsModal} />
                     <ActiveWorkspaces />
+                    <BookmarksButton onClick={() => setShowBookmarks(true)} />
                   </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 pb-3 rounded-b-[16px] bg-theme-bg-sidebar light:bg-slate-200 bg-opacity-80 backdrop-filter backdrop-blur-md z-10">
@@ -75,6 +78,9 @@ export default function Sidebar() {
         </div>
         {showingNewWsModal && <NewWorkspaceModal hideModal={hideNewWsModal} />}
       </div>
+      {showBookmarks && (
+        <BookmarksPanel onClose={() => setShowBookmarks(false)} />
+      )}
       <WorkspaceAndThreadTooltips />
     </>
   );
@@ -204,6 +210,19 @@ function NewWorkspaceButton({ user, showNewWsModal }) {
         </p>
       </button>
     </div>
+  );
+}
+
+function BookmarksButton({ onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex items-center gap-x-2 px-4 py-2 rounded-lg text-theme-text-secondary hover:bg-theme-bg-primary transition-colors w-full"
+      aria-label="Open bookmarks"
+    >
+      <BookmarkSimple size={18} weight="bold" />
+      <span className="text-sm">Bookmarks</span>
+    </button>
   );
 }
 
