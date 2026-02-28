@@ -145,6 +145,8 @@ model workspaces {
   agentModel                   String?
   queryRefusalResponse         String?
   vectorSearchMode             String?                        @default("default")
+  autoTranslateResponses       Boolean?                       @default(false)
+  autoTranslateLanguage        String?
   workspace_users              workspace_users[]
   documents                    workspace_documents[]
   workspace_suggested_messages workspace_suggested_messages[]

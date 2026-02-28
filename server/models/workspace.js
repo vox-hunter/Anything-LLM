@@ -55,6 +55,8 @@ const Workspace = {
     "agentModel",
     "queryRefusalResponse",
     "vectorSearchMode",
+    "autoTranslateResponses",
+    "autoTranslateLanguage",
   ],
 
   validations: {
@@ -128,6 +130,14 @@ const Workspace = {
       )
         return "default";
       return value;
+    },
+    autoTranslateResponses: (value) => {
+      if (value === true || value === "true") return true;
+      return false;
+    },
+    autoTranslateLanguage: (value) => {
+      if (!value || typeof value !== "string") return null;
+      return String(value).slice(0, 100);
     },
   },
 
