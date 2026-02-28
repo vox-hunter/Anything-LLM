@@ -764,6 +764,77 @@ const System = {
       });
   },
 
+  getPromptTemplates: async function () {
+    return await fetch(`${API_BASE}/system/prompt-templates`, {
+      method: "GET",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not fetch prompt templates.");
+        return res.json();
+      })
+      .then((res) => res.templates)
+      .catch((e) => {
+        console.error(e);
+        return [];
+      });
+  },
+
+  createPromptTemplate: async function (templateData) {
+    return await fetch(`${API_BASE}/system/prompt-templates`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(templateData),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok)
+          throw new Error(
+            data.message || "Error creating prompt template."
+          );
+        return data;
+      })
+      .then((res) => ({ template: res.template, error: null }))
+      .catch((e) => {
+        return { template: null, error: e.message };
+      });
+  },
+
+  updatePromptTemplate: async function (templateId, templateData) {
+    return await fetch(`${API_BASE}/system/prompt-templates/${templateId}`, {
+      method: "POST",
+      headers: baseHeaders(),
+      body: JSON.stringify(templateData),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok)
+          throw new Error(
+            data.message || "Could not update prompt template."
+          );
+        return data;
+      })
+      .then((res) => ({ template: res.template, error: null }))
+      .catch((e) => {
+        return { template: null, error: e.message };
+      });
+  },
+
+  deletePromptTemplate: async function (templateId) {
+    return await fetch(`${API_BASE}/system/prompt-templates/${templateId}`, {
+      method: "DELETE",
+      headers: baseHeaders(),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Could not delete prompt template.");
+        return true;
+      })
+      .catch((e) => {
+        console.error(e);
+        return false;
+      });
+  },
+
   /**
    * Fetches the can view chat history state from local storage or the system settings.
    * Notice: This is an instance setting that cannot be changed via the UI and it is cached

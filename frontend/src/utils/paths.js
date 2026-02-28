@@ -170,6 +170,9 @@ export default {
     mobileConnections: () => {
       return `/settings/mobile-connections`;
     },
+    promptTemplates: () => {
+      return `/settings/prompt-templates`;
+    },
   },
   agents: {
     builder: () => {
