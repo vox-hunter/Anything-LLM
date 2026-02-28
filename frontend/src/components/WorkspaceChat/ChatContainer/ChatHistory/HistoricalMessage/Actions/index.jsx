@@ -1,11 +1,24 @@
 import React, { memo, useState } from "react";
 import useCopyText from "@/hooks/useCopyText";
-import { Check, ThumbsUp, ArrowsClockwise, Copy } from "@phosphor-icons/react";
+import {
+  Check,
+  ThumbsUp,
+  ArrowsClockwise,
+  Copy,
+  Smiley,
+} from "@phosphor-icons/react";
 import Workspace from "@/models/workspace";
 import { EditMessageAction } from "./EditMessage";
 import RenderMetrics from "./RenderMetrics";
 import ActionMenu from "./ActionMenu";
 import { useTranslation } from "react-i18next";
+
+const REACTION_OPTIONS = [
+  { key: "helpful", label: "Helpful", emoji: "👍" },
+  { key: "inaccurate", label: "Inaccurate", emoji: "❌" },
+  { key: "needs_more_detail", label: "Needs More Detail", emoji: "🔍" },
+  { key: "perfect", label: "Perfect", emoji: "⭐" },
+];
 
 const Actions = ({
   message,
@@ -54,6 +67,9 @@ const Actions = ({
               tooltipContent={t("chat_window.good_response")}
               IconComponent={ThumbsUp}
             />
+          )}
+          {chatId && role !== "user" && !isEditing && (
+            <ReactionPicker chatId={chatId} slug={slug} />
           )}
           <ActionMenu
             chatId={chatId}
@@ -146,6 +162,59 @@ function RegenerateMessage({ regenerateMessage, chatId }) {
           weight="fill"
         />
       </button>
+    </div>
+  );
+}
+
+function ReactionPicker({ chatId, slug }) {
+  const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState([]);
+  const { t } = useTranslation();
+
+  const toggleReaction = async (reactionKey) => {
+    if (selected.includes(reactionKey)) {
+      await Workspace.removeChatReaction(chatId, slug, reactionKey);
+      setSelected((prev) => prev.filter((r) => r !== reactionKey));
+    } else {
+      await Workspace.addChatReaction(chatId, slug, reactionKey);
+      setSelected((prev) => [...prev, reactionKey]);
+    }
+  };
+
+  return (
+    <div className="mt-3 relative">
+      <button
+        onClick={() => setOpen(!open)}
+        data-tooltip-id="reaction-picker"
+        data-tooltip-content={t("chat_window.reactions")}
+        className="text-zinc-300"
+        aria-label={t("chat_window.reactions")}
+      >
+        <Smiley
+          color="var(--theme-sidebar-footer-icon-fill)"
+          size={20}
+          className="mb-1"
+          weight={open ? "fill" : "regular"}
+        />
+      </button>
+      {open && (
+        <div className="absolute bottom-full left-0 mb-1 flex gap-x-1 bg-theme-bg-secondary border border-white/10 rounded-lg p-1 z-10 shadow-lg">
+          {REACTION_OPTIONS.map((opt) => (
+            <button
+              key={opt.key}
+              onClick={() => toggleReaction(opt.key)}
+              className={`px-2 py-1 rounded text-xs whitespace-nowrap transition-colors ${
+                selected.includes(opt.key)
+                  ? "bg-primary-button text-white"
+                  : "text-theme-text-secondary hover:bg-white/10"
+              }`}
+              title={opt.label}
+            >
+              {opt.emoji} {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -393,3 +393,14 @@ model workspace_parsed_files {
   @@index([workspaceId])
   @@index([userId])
 }
+
+model message_reactions {
+  id          Int      @id @default(autoincrement())
+  chatId      Int
+  userId      Int?
+  reaction    String
+  createdAt   DateTime @default(now())
+
+  @@index([chatId])
+  @@index([reaction])
+}

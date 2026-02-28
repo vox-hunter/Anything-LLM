@@ -369,6 +369,12 @@ const SidebarOptions = ({ user = null, t }) => (
               roles: ["admin"],
             },
             {
+              btnText: t("settings.reaction-report"),
+              href: paths.settings.reactionReport(),
+              flex: true,
+              roles: ["admin"],
+            },
+            {
               btnText: t("settings.api-keys"),
               href: paths.settings.apiKeys(),
               flex: true,
