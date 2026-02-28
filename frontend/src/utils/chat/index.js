@@ -176,7 +176,7 @@ export default function handleChat(
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `chat-export-${Date.now()}.txt`;
+      a.download = `chat-export-${new Date().toISOString().slice(0, 10)}.txt`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
