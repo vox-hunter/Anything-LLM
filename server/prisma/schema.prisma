@@ -85,6 +85,7 @@ model users {
   prompt_history               prompt_history[]
   desktop_mobile_devices       desktop_mobile_devices[]
   workspace_parsed_files       workspace_parsed_files[]
+  notifications                notifications[]
 }
 
 model recovery_codes {
@@ -392,4 +393,18 @@ model workspace_parsed_files {
 
   @@index([workspaceId])
   @@index([userId])
+}
+
+model notifications {
+  id            Int      @id @default(autoincrement())
+  type          String   @default("info") // info, warning, error, success
+  message       String
+  status        String   @default("unread") // read, unread
+  userId        Int?
+  createdAt     DateTime @default(now())
+  lastUpdatedAt DateTime @default(now())
+  user          users?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
 }
